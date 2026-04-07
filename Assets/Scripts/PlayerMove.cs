@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class PlayerMove : MonoBehaviour
 
     public bool isJumping = false;
 
+    public int hp = 20;
+
+    public int maxHp = 20;
+    public Slider hpSlider;
 
 
     void Start()
@@ -54,5 +59,13 @@ public class PlayerMove : MonoBehaviour
 
         cc.Move(dir * moveSpeed * Time.deltaTime);
 
+    }
+
+
+    public void DamagedAction(int damage)
+    {
+        hp -= damage;
+
+        hpSlider.value = (float)hp / (float)maxHp;
     }
 }

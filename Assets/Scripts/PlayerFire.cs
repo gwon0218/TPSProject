@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerFire : MonoBehaviour
@@ -7,6 +8,17 @@ public class PlayerFire : MonoBehaviour
     public GameObject bombFactory;
 
     public float throwPower = 15f;
+
+    public GameObject bulletEffect;
+    ParticleSystem ps;
+
+    public int weaponPower = 10;
+
+
+    void Start()
+    {
+        ps = bulletEffect.GetComponent<ParticleSystem>();
+    }
 
     void Update()
     {
@@ -18,5 +30,30 @@ public class PlayerFire : MonoBehaviour
             Rigidbody rb = bomb.GetComponent<Rigidbody>();
             rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            RaycastHit hitinfo = new RaycastHit();
+        
+            if(Physics.Raycast(ray, out hitinfo))
+            {
+                if(hitinfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                {
+                    EnemyFSM eFSM = hitinfo.transform.GetComponent<EnemyFSM>();
+                    eFSM.HitEnemy(weaponPower);
+                }
+                else
+                {
+                    bulletEffect.transform.position = hitinfo.point;
+                    bulletEffect.transform.forward = hitinfo.normal;
+                    ps.Play();
+
+                }
+            }
+        }
+
+        
+
     }
 }
