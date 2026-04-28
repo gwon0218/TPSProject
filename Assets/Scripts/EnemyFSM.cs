@@ -20,7 +20,7 @@ public class EnemyFSM : MonoBehaviour
     public float findDistance = 8.0f;
     Transform player;
 
-    public float attackDistance = 3.0f;  
+    public float attackDistance = 3.0f;
     public float MoveSpeed = 5.0f;
     CharacterController cc;
 
@@ -37,6 +37,8 @@ public class EnemyFSM : MonoBehaviour
     int maxHp = 15;
     public Slider hpSlider;
 
+    Animator anim;
+
 
 
     private void Start()
@@ -44,10 +46,11 @@ public class EnemyFSM : MonoBehaviour
         m_State = EnemyState.Idle;
         player = GameObject.Find("Player").transform;
         cc = GetComponent<CharacterController>();
-        originPos = transform.position; 
+        originPos = transform.position;
+        anim = GetComponentInChildren<Animator>();
     }
 
-    
+
 
     void Update()
     {
@@ -81,7 +84,8 @@ public class EnemyFSM : MonoBehaviour
         if(Vector3.Distance(transform.position, player.position) < findDistance)
         {
             m_State = EnemyState.Move;
-            print("»óÅÂÀüÈ¯: Idle -> Move");
+            print("ìƒíƒœì „í™˜: Idle -> Move");
+            anim.SetTrigger("Move");
         }
     }
 
@@ -89,19 +93,22 @@ public class EnemyFSM : MonoBehaviour
     {   if(Vector3.Distance(transform.position, originPos) > moveDistance)
         {
             m_State = EnemyState.Return;
-            print("»óÅÂÀüÈ¯: Move -> Return");
+            print("ìƒíƒœì „í™˜: Move -> Return");
+            anim.SetTrigger("Move");
         }
 
         else if (Vector3.Distance(transform.position, player.position) > attackDistance)
         {
             Vector3 dir = (player.position - transform.position).normalized;
+            transform.forward = dir;
 
             cc.Move(dir * MoveSpeed * Time.deltaTime);
         }
         else
         {
             m_State = EnemyState.Attack;
-            print("»óÅÂÀüÈ¯: Move -> Attack");
+            print("ìƒíƒœì „í™˜: Move -> Attack");
+            anim.SetTrigger("Attack");
 
             currentTime = attackDelay;
         }
@@ -111,18 +118,22 @@ public class EnemyFSM : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, player.position) < attackDistance)
         {
+            Vector3 dir = (player.position - transform.position).normalized;
+            transform.forward = dir;
+
             currentTime += Time.deltaTime;
             if(currentTime > attackDelay)
             {
                 player.GetComponent<PlayerMove>().DamagedAction(attackPower);
-                print("°ø°Ý!");
+                print("ê³µê²©!");
                 currentTime = 0;
             }
         }
         else
         {
             m_State = EnemyState.Move;
-            print("»óÅÂÀüÈ¯: Attack -> Move");
+            print("ìƒíƒœì „í™˜: Attack -> Move");
+            anim.SetTrigger("Move");
 
             currentTime = 0;
         }
@@ -134,6 +145,7 @@ public class EnemyFSM : MonoBehaviour
         if (Vector3.Distance(transform.position, originPos) >  0.1f)
         {
             Vector3 dir = (originPos - transform.position).normalized;
+            transform.forward = dir;
             cc.Move(dir * MoveSpeed * Time.deltaTime);
         }
         else
@@ -143,7 +155,8 @@ public class EnemyFSM : MonoBehaviour
             hp = 15;
             m_State = EnemyState.Idle;
 
-            print("»óÅÂÀüÈ¯: Return -> Idle");
+            print("ìƒíƒœì „í™˜: Return -> Idle");
+            anim.SetTrigger("Idle");
 
         }
     }
@@ -161,13 +174,15 @@ public class EnemyFSM : MonoBehaviour
         if(hp > 0)
         {
             m_State = EnemyState.Damaged;
-            print("»óÅÂÀüÈ¯: Any State -> Damaged");
+            print("ìƒíƒœì „í™˜: Any State -> Damaged");
+            anim.SetTrigger("Damaged");
             Damaged();
         }
         else
         {
             m_State = EnemyState.Die;
-            print("»óÅÂÀüÈ¯: Any State -> Die");
+            print("ìƒíƒœì „í™˜: Any State -> Die");
+            anim.SetTrigger("Die");
             Die();
         }
     }
@@ -182,7 +197,8 @@ public class EnemyFSM : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         m_State = EnemyState.Move;
-        print("»óÅÂÀüÈ¯: Damaged -> Move");
+        print("ìƒíƒœì „í™˜: Damaged -> Move");
+        anim.SetTrigger("Move");
     }
 
     void Die()
@@ -195,7 +211,7 @@ public class EnemyFSM : MonoBehaviour
     {
         cc.enabled = false;
         yield return new WaitForSeconds(2f);
-        print("¼Ò¸ê");
+        print("ì†Œë©¸");
         Destroy(gameObject);
     }
 

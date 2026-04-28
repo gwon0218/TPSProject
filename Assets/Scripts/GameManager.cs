@@ -1,6 +1,6 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 public class GameManager : MonoBehaviour
@@ -28,13 +28,13 @@ public class GameManager : MonoBehaviour
     public GameState gState;
 
     public GameObject gameLabel;
-    Text gameText;
+    TMP_Text gameText;
 
     void Start()
     {
         gState = GameState.Ready;
 
-        gameText = gameLabel.GetComponent<Text>();
+        gameText = gameLabel.GetComponent<TMP_Text>();
         gameText.text = "Ready...";
         gameText.color = new Color32(255, 185, 0, 255);
 
